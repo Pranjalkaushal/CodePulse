@@ -8,6 +8,12 @@ import { StudentDashboardPage } from '../features/student/pages/StudentDashboard
 import { LeaderboardPage } from '../features/leaderboard/pages/LeaderboardPage'
 import { TeacherDashboardPage } from '../features/teacher/pages/TeacherDashboardPage'
 import { MentorshipPage } from '../features/mentorship/pages/MentorshipPage'
+import { useAuthStore } from './store/authStore'
+
+function RoleHomeRedirect() {
+  const role = useAuthStore((s) => s.user?.role)
+  return <Navigate to={role === 'teacher' ? '/teacher' : '/student'} replace />
+}
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +30,7 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { path: '/', element: <Navigate to="/student" replace /> },
+      { path: '/', element: <RoleHomeRedirect /> },
       { path: '/student', element: <StudentDashboardPage /> },
       { path: '/leaderboard', element: <LeaderboardPage /> },
       { path: '/teacher', element: <TeacherDashboardPage /> },

@@ -1,21 +1,24 @@
-.coderank-heatmap .react-calendar-heatmap text {
-  fill: #94a3b8;
+.codepulse-heatmap .react-calendar-heatmap text {
+  fill: #64748b;
   font-size: 10px;
 }
 
-.coderank-heatmap .react-calendar-heatmap .color-empty {
-  fill: #0b1220;
-}
-.coderank-heatmap .react-calendar-heatmap .color-scale-1 {
-  fill: rgba(99, 102, 241, 0.35);
-}
-.coderank-heatmap .react-calendar-heatmap .color-scale-2 {
-  fill: rgba(99, 102, 241, 0.55);
-}
-.coderank-heatmap .react-calendar-heatmap .color-scale-3 {
-  fill: rgba(99, 102, 241, 0.75);
-}
-.coderank-heatmap .react-calendar-heatmap .color-scale-4 {
-  fill: rgba(99, 102, 241, 0.95);
+.codepulse-heatmap .react-calendar-heatmap .color-empty {
+  fill: #f1f5f9;
 }
 
+.codepulse-heatmap .react-calendar-heatmap .color-scale-1 {
+  fill: rgba(37, 99, 235, 0.22);
+}
+
+.codepulse-heatmap .react-calendar-heatmap .color-scale-2 {
+  fill: rgba(37, 99, 235, 0.38);
+}
+
+.codepulse-heatmap .react-calendar-heatmap .color-scale-3 {
+  fill: rgba(37, 99, 235, 0.55);
+}
+
+.codepulse-heatmap .react-calendar-heatmap .color-scale-4 {
+  fill: rgba(37, 99, 235, 0.78);
+}

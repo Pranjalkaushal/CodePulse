@@ -2,18 +2,22 @@ import { http } from '../../../services/http'
 
 export type LeaderboardItem = {
   id: string
-  name?: string
+  fullName?: string
   email?: string
-  class?: string
-  batch?: string
-  easy?: number
-  medium?: number
-  hard?: number
+  leetcodeUsername?: string
+  totalSolved?: number
+  easySolved?: number
+  mediumSolved?: number
+  hardSolved?: number
+  ranking?: number
+  consistencyScore?: number
+  streak?: number
+  position?: number
   [key: string]: unknown
 }
 
-export async function getLeaderboard(params?: { class?: string; batch?: string }) {
-  const res = await http.get<LeaderboardItem[]>('/api/leaderboard', { params })
+export async function getLeaderboard() {
+  const res = await http.get<LeaderboardItem[]>('/api/users/leaderboard')
   return res.data
 }
 

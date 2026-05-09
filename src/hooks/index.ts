@@ -1,2 +1,1 @@
-export {}
-
+export { useMockDelay } from './useMockDelay'

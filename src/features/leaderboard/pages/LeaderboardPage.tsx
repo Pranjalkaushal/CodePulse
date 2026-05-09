@@ -1,121 +1,102 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Card } from '../../../components/ui/Card'
-import { Loader } from '../../../components/ui/Loader'
-import { Alert } from '../../../components/ui/Alert'
-import { Table } from '../../../components/ui/Table'
 import { Input } from '../../../components/ui/Input'
-import { getErrorMessage } from '../../../utils/apiError'
-import { getLeaderboard, type LeaderboardItem } from '../services/leaderboardApi'
-
-function weightedScore(item: LeaderboardItem) {
-  const easy = typeof item.easy === 'number' ? item.easy : 0
-  const medium = typeof item.medium === 'number' ? item.medium : 0
-  const hard = typeof item.hard === 'number' ? item.hard : 0
-  return easy * 1 + medium * 3 + hard * 6
-}
+import { Table } from '../../../components/ui/Table'
+import { PageHeader } from '../../../components/layout/PageHeader'
+import { getLeaderboard } from '../services/leaderboardApi'
+import { Skeleton } from '../../../components/ui/Skeleton'
+import { Avatar } from '../../../components/ui/Avatar'
+import { useAuthStore } from '../../../app/store/authStore'
+import { Alert } from '../../../components/ui/Alert'
 
 export function LeaderboardPage() {
-  const [classFilter, setClassFilter] = useState('')
-  const [batchFilter, setBatchFilter] = useState('')
-  const [items, setItems] = useState<LeaderboardItem[] | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [query, setQuery] = useState('')
+  const [rows, setRows] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const user = useAuthStore((s) => s.user)
 
   useEffect(() => {
-    let alive = true
-    setLoading(true)
-    setError(null)
-
-    getLeaderboard({
-      class: classFilter.trim() ? classFilter.trim() : undefined,
-      batch: batchFilter.trim() ? batchFilter.trim() : undefined,
-    })
-      .then((data) => {
-        if (!alive) return
-        setItems(data)
-      })
-      .catch((e) => {
-        if (!alive) return
-        setError(getErrorMessage(e))
-        setItems(null)
-      })
-      .finally(() => {
-        if (!alive) return
+    const run = async () => {
+      try {
+        setLoading(true)
+        setError('')
+        const data = await getLeaderboard()
+        setRows(data)
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Unable to load leaderboard')
+      } finally {
         setLoading(false)
-      })
-
-    return () => {
-      alive = false
+      }
     }
-  }, [classFilter, batchFilter])
+    run()
+  }, [])
 
-  const rows = useMemo(() => {
-    const data = items ?? []
-    return [...data]
-      .map((i) => ({ ...i, _score: weightedScore(i) }))
-      .sort((a, b) => (b._score as number) - (a._score as number))
-      .map((i, idx) => ({
-        rank: idx + 1,
-        id: i.id,
-        name: i.name ?? '-',
-        class: i.class ?? '-',
-        batch: i.batch ?? '-',
-        easy: typeof i.easy === 'number' ? i.easy : '-',
-        medium: typeof i.medium === 'number' ? i.medium : '-',
-        hard: typeof i.hard === 'number' ? i.hard : '-',
-        score: i._score as number,
-      }))
-  }, [items])
+  const leaderboardRows = useMemo(() => {
+    const q = query.toLowerCase().trim()
+    const sorted = rows.filter((row) => !q || String(row.fullName || '').toLowerCase().includes(q))
+    const currentId = user?.id
+
+    return sorted.map((i, idx) => ({
+      id: i.id,
+      rank: i.position ?? idx + 1,
+      avatar: (
+        <div className="flex items-center gap-3">
+          <Avatar name={i.fullName ?? '-'} />
+          <div className="min-w-0">
+            <div className={currentId === i.id ? 'font-semibold text-blue-900' : 'font-medium text-slate-900'}>
+              {i.fullName}
+            </div>
+            {currentId === i.id ? (
+              <div className="text-[11px] font-medium uppercase tracking-wide text-blue-600">You</div>
+            ) : null}
+          </div>
+        </div>
+      ),
+      leetcodeUsername: i.leetcodeUsername ?? '-',
+      easy: i.easySolved ?? '-',
+      medium: i.mediumSolved ?? '-',
+      hard: i.hardSolved ?? '-',
+      solved: i.totalSolved ?? 0,
+      consistency: `${i.consistencyScore ?? 0}%`,
+      streak: i.streak ?? 0,
+    }))
+  }, [query, rows, user?.id])
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight text-slate-100">Leaderboard</h2>
-          <p className="mt-1 text-sm text-slate-400">
-            Weighted score = Easy×1 + Medium×3 + Hard×6
-          </p>
-        </div>
-        {loading ? <Loader label="Loading leaderboard..." /> : null}
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        title="Leaderboard"
+        />
 
-      <Card className="space-y-3">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Input
-            label="Filter by Class"
-            placeholder="e.g. CSE-A"
-            value={classFilter}
-            onChange={(e) => setClassFilter(e.target.value)}
-          />
-          <Input
-            label="Filter by Batch"
-            placeholder="e.g. 2026"
-            value={batchFilter}
-            onChange={(e) => setBatchFilter(e.target.value)}
-          />
-        </div>
-        <div className="text-xs text-slate-400">
-          Filters are sent to the backend as query params; results depend on API support.
-        </div>
+      <Card className="space-y-4">
+        <Input label="Search student" placeholder="Search by name" value={query} onChange={(e) => setQuery(e.target.value)} />
       </Card>
+      {error ? <Alert title="Leaderboard unavailable" description={error} /> : null}
 
-      {error ? <Alert title="Failed to load leaderboard" description={error} /> : null}
-
-      <Table
-        keyField="id"
-        columns={[
-          { key: 'rank', header: '#', className: 'w-14' },
-          { key: 'name', header: 'Student' },
-          { key: 'class', header: 'Class' },
-          { key: 'batch', header: 'Batch' },
-          { key: 'easy', header: 'Easy', className: 'w-20' },
-          { key: 'medium', header: 'Medium', className: 'w-24' },
-          { key: 'hard', header: 'Hard', className: 'w-20' },
-          { key: 'score', header: 'Weighted score', className: 'w-36' },
-        ]}
-        rows={rows}
-      />
+      {loading ? (
+        <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-card">
+          <Skeleton className="h-6 w-40" />
+          <Skeleton className="h-[320px] w-full" />
+        </div>
+      ) : (
+        <Table
+          keyField="id"
+          isRowHighlighted={(key) => key === user?.id}
+          columns={[
+            { key: 'rank', header: 'Rank', className: 'w-14 text-slate-500' },
+            { key: 'avatar', header: 'Student', className: 'min-w-[220px]' },
+            { key: 'leetcodeUsername', header: 'LeetCode' },
+            { key: 'easy', header: 'Easy', className: 'w-20' },
+            { key: 'medium', header: 'Medium', className: 'w-24' },
+            { key: 'hard', header: 'Hard', className: 'w-20' },
+            { key: 'solved', header: 'Solved', className: 'w-24' },
+            { key: 'consistency', header: 'Consistency', className: 'w-24' },
+            { key: 'streak', header: 'Streak', className: 'w-20' },
+          ]}
+          rows={leaderboardRows}
+        />
+      )}
     </div>
   )
 }
-

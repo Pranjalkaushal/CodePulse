@@ -1,9 +1,10 @@
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
+import rateLimit from 'express-rate-limit'
 import authRoutes from './routes/authRoutes.js'
-import studentRoutes from './routes/studentRoutes.js'
-import leaderboardRoutes from './routes/leaderboardRoutes.js'
-import analyticsRoutes from './routes/analyticsRoutes.js'
+import userRoutes from './routes/userRoutes.js'
+import leetcodeRoutes from './routes/leetcodeRoutes.js'
 import teacherRoutes from './routes/teacherRoutes.js'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 
@@ -11,8 +12,17 @@ const app = express()
 
 app.use(
   cors({
-    origin: true,
+    origin: process.env.CLIENT_URL || true,
     credentials: true,
+  }),
+)
+app.use(helmet())
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 300,
+    standardHeaders: true,
+    legacyHeaders: false,
   }),
 )
 app.use(express.json())
@@ -22,9 +32,8 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/auth', authRoutes)
-app.use('/api/student', studentRoutes)
-app.use('/api/leaderboard', leaderboardRoutes)
-app.use('/api/analytics', analyticsRoutes)
+app.use('/api/users', userRoutes)
+app.use('/api/leetcode', leetcodeRoutes)
 app.use('/api/teacher', teacherRoutes)
 
 app.use(notFound)

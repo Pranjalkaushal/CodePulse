@@ -1,4 +1,4 @@
-import Student from '../models/Student.js'
+import User from '../models/User.js'
 import { verifyToken } from '../utils/jwt.js'
 
 export async function protect(req, res, next) {
@@ -10,7 +10,7 @@ export async function protect(req, res, next) {
     }
     const token = auth.split(' ')[1]
     const decoded = verifyToken(token)
-    const user = await Student.findById(decoded.id).select('-password')
+    const user = await User.findById(decoded.id).select('-password')
     if (!user) {
       res.status(401)
       throw new Error('Not authorized')
@@ -19,6 +19,16 @@ export async function protect(req, res, next) {
     next()
   } catch (e) {
     next(e)
+  }
+}
+
+export function allowRoles(...roles) {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      res.status(403)
+      return next(new Error('Forbidden: insufficient permissions'))
+    }
+    return next()
   }
 }
 

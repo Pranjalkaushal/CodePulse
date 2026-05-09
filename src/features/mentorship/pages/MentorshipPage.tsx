@@ -1,79 +1,76 @@
 import { useEffect, useState } from 'react'
 import { Card } from '../../../components/ui/Card'
-import { Loader } from '../../../components/ui/Loader'
-import { Alert } from '../../../components/ui/Alert'
 import { Table } from '../../../components/ui/Table'
-import { getErrorMessage } from '../../../utils/apiError'
-import { getTopicExperts, type TopicExpert } from '../services/mentorshipApi'
+import { PageHeader } from '../../../components/layout/PageHeader'
+import { Avatar } from '../../../components/ui/Avatar'
+import { Skeleton } from '../../../components/ui/Skeleton'
+import { EmptyState } from '../../../components/layout/EmptyState'
+import { getTopicExperts } from '../services/mentorshipApi'
+import { Alert } from '../../../components/ui/Alert'
 
 export function MentorshipPage() {
-  const [experts, setExperts] = useState<TopicExpert[] | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [experts, setExperts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    let alive = true
-    setLoading(true)
-    setError(null)
-    getTopicExperts()
-      .then((data) => {
-        if (!alive) return
+    const run = async () => {
+      try {
+        setLoading(true)
+        setError('')
+        const data = await getTopicExperts()
         setExperts(data)
-      })
-      .catch((e) => {
-        if (!alive) return
-        setError(getErrorMessage(e))
-        setExperts(null)
-      })
-      .finally(() => {
-        if (!alive) return
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Failed to load topic experts')
+      } finally {
         setLoading(false)
-      })
-    return () => {
-      alive = false
+      }
     }
+    run()
   }, [])
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight text-slate-100">Mentorship</h2>
-          <p className="mt-1 text-sm text-slate-400">Find topic experts using skillStats.</p>
+    <div className="space-y-8">
+      <PageHeader
+        title="Topic Experts"
+        description="Students ranked by solved counts across LeetCode topics."
+      />
+      {error ? <Alert title="Topic experts unavailable" description={error} /> : null}
+
+      {loading ? (
+        <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-card">
+          <Skeleton className="h-6 w-56" />
+          <Skeleton className="h-[280px] w-full" />
         </div>
-        {loading ? <Loader label="Loading experts..." /> : null}
-      </div>
-
-      {error ? <Alert title="Failed to load mentors" description={error} /> : null}
-
-      <Card className="space-y-3">
-        {experts && experts.length === 0 ? (
-          <Alert
-            variant="info"
-            title="No experts found"
-            description="The backend did not return skillStats per student (or it was empty)."
-          />
-        ) : null}
-
-        <Table
-          keyField="topic"
-          columns={[
-            { key: 'topic', header: 'Topic' },
-            { key: 'student', header: 'Top student' },
-            { key: 'class', header: 'Class' },
-            { key: 'batch', header: 'Batch' },
-            { key: 'score', header: 'Score' },
-          ]}
-          rows={(experts ?? []).map((e) => ({
-            topic: e.topic,
-            student: e.student.name ?? e.student.id,
-            class: e.student.class ?? '-',
-            batch: e.student.batch ?? '-',
-            score: e.score,
-          }))}
+      ) : experts.length === 0 ? (
+        <EmptyState
+          title="No mentorship graph yet"
+          description="Hydrate leaderboard payloads with granular skill buckets to populate this explorer."
         />
-      </Card>
+      ) : (
+        <Card>
+          <Table
+            keyField="topic"
+            columns={[
+              { key: 'topic', header: 'Topic' },
+              { key: 'student', header: 'Expert Student' },
+              { key: 'solved', header: 'Problems Solved', className: 'w-36 text-right' },
+              { key: 'rank', header: 'Rank', className: 'w-24 text-right' },
+            ]}
+            rows={experts.map((e) => ({
+              topic: <span className="font-semibold text-slate-900">{e.topic}</span>,
+              student: (
+                <div className="flex items-center gap-3">
+                  <Avatar name={e.topStudents?.[0]?.fullName ?? 'Student'} />
+                  <div className="text-sm font-semibold text-slate-900">{e.topStudents?.[0]?.fullName ?? '—'}</div>
+                </div>
+              ),
+              solved: <span className="block text-right font-semibold tabular-nums text-slate-900">{e.topStudents?.[0]?.solvedCount ?? 0}</span>,
+              rank: <span className="block text-right font-semibold tabular-nums text-slate-900">{e.topStudents?.[0]?.rank ?? 1}</span>,
+            }))}
+          />
+        </Card>
+      )}
     </div>
   )
 }
-

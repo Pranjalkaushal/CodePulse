@@ -33,18 +33,24 @@ export function SkillRadarChart({ skillStats }: { skillStats: unknown }) {
 
   return (
     <Card className="h-[340px]">
-      <div className="mb-2 text-sm font-medium text-slate-100">Skill radar</div>
+      <div className="mb-3 text-sm font-semibold tracking-tight text-slate-900">Skill radar</div>
       {data.length === 0 ? (
-        <div className="text-sm text-slate-400">No skill stats available.</div>
+        <div className="text-sm text-slate-500">No skill stats available.</div>
       ) : (
         <ResponsiveContainer width="100%" height="90%">
           <RadarChart data={data}>
-            <PolarGrid stroke="#334155" />
-            <PolarAngleAxis dataKey="skill" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+            <PolarGrid stroke="#e2e8f0" />
+            <PolarAngleAxis dataKey="skill" tick={{ fill: '#475569', fontSize: 12 }} />
             <Tooltip
-              contentStyle={{ background: '#0b1220', border: '1px solid #1f2937', color: '#e5e7eb' }}
+              contentStyle={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 12,
+                color: '#0f172a',
+                boxShadow: '0 8px 24px -8px rgb(15 23 42 / 0.12)',
+              }}
             />
-            <Radar dataKey="value" stroke="#6366f1" fill="#6366f1" fillOpacity={0.35} />
+            <Radar dataKey="value" stroke="#2563eb" fill="#2563eb" fillOpacity={0.22} />
           </RadarChart>
         </ResponsiveContainer>
       )}

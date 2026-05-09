@@ -3,9 +3,11 @@ import { persist } from 'zustand/middleware'
 
 export type AuthUser = {
   id: string
+  fullName?: string
   name?: string
   email?: string
   role?: 'student' | 'teacher' | string
+  leetcodeUsername?: string
 }
 
 type AuthState = {
@@ -23,7 +25,6 @@ export const useAuthStore = create<AuthState>()(
       setAuth: ({ token, user }) => set({ token, user }),
       clearAuth: () => set({ token: null, user: null }),
     }),
-    { name: 'coderank-auth-v1' },
+    { name: 'codepulse-auth-v2' },
   ),
 )
-

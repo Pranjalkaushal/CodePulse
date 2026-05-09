@@ -2,17 +2,24 @@ import { Outlet, Link } from 'react-router-dom'
 
 export function AuthLayout() {
   return (
-    <div className="min-h-dvh bg-gradient-to-b from-slate-950 via-slate-950 to-indigo-950/30">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
-        <Link to="/login" className="text-lg font-semibold tracking-tight text-slate-100">
-          CodeRank
-        </Link>
-        <div className="text-xs text-slate-400">Campus coding analytics platform</div>
+    <div className="flex min-h-dvh flex-col bg-slate-50">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900 transition-colors hover:text-blue-700"
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-xs font-semibold text-white">
+              CP
+            </span>
+            CodePulse
+          </Link>
+          <span className="hidden text-sm text-slate-500 sm:inline">Campus coding analytics</span>
+        </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 pb-10">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6 lg:px-8">
         <Outlet />
       </main>
     </div>
   )
 }
-

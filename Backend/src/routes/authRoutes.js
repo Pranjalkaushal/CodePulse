@@ -1,10 +1,19 @@
 import { Router } from 'express'
-import { login, register } from '../controllers/authController.js'
+import {
+  sendOtp,
+  verifyOtp,
+  signup,
+  login,
+} from '../controllers/authController.js'
 
 const router = Router()
 
-router.post('/register', register)
+// OTP FLOW (must be visually grouped)
+router.post('/send-otp', sendOtp)
+router.post('/verify-otp', verifyOtp)
+router.post('/signup', signup)
+
+// AUTH
 router.post('/login', login)
 
 export default router
-

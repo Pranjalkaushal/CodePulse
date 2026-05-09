@@ -2,18 +2,15 @@ import { http } from '../../../services/http'
 
 export type StudentResponse = {
   id: string
-  name?: string
+  fullName?: string
   email?: string
-  batch?: string
-  class?: string
-  department?: string
-  avatarUrl?: string
-  // backend may include more fields; keep flexible
-  [key: string]: unknown
+  role?: string
+  leetcodeUsername?: string
+  stats?: Record<string, unknown>
 }
 
-export async function getStudent(studentId: string) {
-  const res = await http.get<StudentResponse>(`/api/student/${encodeURIComponent(studentId)}`)
+export async function getMe() {
+  const res = await http.get<StudentResponse>('/api/users/me')
   return res.data
 }
 

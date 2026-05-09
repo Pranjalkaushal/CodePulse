@@ -35,12 +35,12 @@ export function SubmissionHeatmap({ submissionCalendar }: { submissionCalendar: 
 
   return (
     <Card>
-      <div className="mb-2 text-sm font-medium text-slate-100">Submission calendar</div>
+      <div className="mb-3 text-sm font-semibold tracking-tight text-slate-900">Submission calendar</div>
       {values.length === 0 || !range ? (
-        <div className="text-sm text-slate-400">No submission activity available.</div>
+        <div className="text-sm text-slate-500">No submission activity yet.</div>
       ) : (
         <div className="overflow-x-auto">
-          <div className="min-w-[720px] coderank-heatmap">
+          <div className="min-w-[720px] codepulse-heatmap">
             <CalendarHeatmap
               startDate={range.start}
               endDate={range.end}
