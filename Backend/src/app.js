@@ -32,7 +32,7 @@ app.use(
       const isAllowed =
         !origin ||
         allowedOrigins.includes(origin) ||
-        /^https:\/\/codepulse-.*\.vercel\.app$/.test(origin)
+        /^https:\/\/code-pulse-.*\.vercel\.app$/.test(origin)
 
       console.log('CORS ALLOWED:', isAllowed, 'ORIGIN:', origin)
 
