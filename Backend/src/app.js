@@ -11,16 +11,7 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 
 const app = express()
 
-app.use((req, res, next) => {
-  console.log(
-    'REQUEST:',
-    req.method,
-    req.url,
-    'ORIGIN:',
-    req.headers.origin,
-  )
-  next()
-})
+
 
 const allowedOrigins = [
   'https://code-pulse-neon.vercel.app',
@@ -34,7 +25,7 @@ app.use(
         allowedOrigins.includes(origin) ||
         /^https:\/\/code-pulse-.*\.vercel\.app$/.test(origin)
 
-      console.log('CORS ALLOWED:', isAllowed, 'ORIGIN:', origin)
+     
 
       callback(null, isAllowed)
     },
