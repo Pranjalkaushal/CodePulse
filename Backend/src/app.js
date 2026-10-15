@@ -14,6 +14,7 @@ app.use(
   cors({
     origin: [
       'https://code-pulse-neon.vercel.app',
+      /^https:\/\/codepulse-.*\.vercel\.app$/,
     ],
     credentials: true,
   }),
