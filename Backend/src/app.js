@@ -12,7 +12,9 @@ const app = express()
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || true,
+    origin: [
+      'https://code-pulse-neon.vercel.app',
+    ],
     credentials: true,
   }),
 )
