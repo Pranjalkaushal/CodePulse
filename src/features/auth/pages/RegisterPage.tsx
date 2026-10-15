@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 import { Input } from '../../../components/ui/Input'
-import { Loader } from '../../../components/ui/Loader'
 import { Alert } from '../../../components/ui/Alert'
 import { useAuthStore } from '../../../app/store/authStore'
 import { useState } from 'react'
@@ -136,14 +135,7 @@ export function RegisterPage() {
 
       // final signup
       const session = await signup({
-        fullName: values.fullName,
         email: values.email,
-        password: values.password,
-        role: values.role,
-        leetcodeUsername:
-          values.role === 'student'
-            ? values.leetcodeUsername
-            : undefined,
         otp: values.otp,
       })
 
