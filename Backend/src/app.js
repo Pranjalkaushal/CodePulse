@@ -10,10 +10,18 @@ import teacherRoutes from './routes/teacherRoutes.js'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 
 const app = express()
+
 app.use((req, res, next) => {
-  console.log('REQUEST:', req.method, req.url, 'ORIGIN:', req.headers.origin)
+  console.log(
+    'REQUEST:',
+    req.method,
+    req.url,
+    'ORIGIN:',
+    req.headers.origin,
+  )
   next()
 })
+
 const allowedOrigins = [
   'https://code-pulse-neon.vercel.app',
 ]
@@ -21,15 +29,14 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (
+      const isAllowed =
         !origin ||
         allowedOrigins.includes(origin) ||
         /^https:\/\/codepulse-.*\.vercel\.app$/.test(origin)
-      ) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
+
+      console.log('CORS ALLOWED:', isAllowed, 'ORIGIN:', origin)
+
+      callback(null, isAllowed)
     },
     credentials: true,
   }),
