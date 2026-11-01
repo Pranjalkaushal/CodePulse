@@ -8,7 +8,7 @@ import { SubmissionHeatmap } from '../../../components/charts/SubmissionHeatmap'
 import { SkillRadarChart } from '../../../components/charts/SkillRadarChart'
 import { Alert } from '../../../components/ui/Alert'
 import { getMe } from '../services/studentApi'
-
+import { ChatWidget } from '../../../features/chat/components/ChatWidget'
 export function StudentDashboardPage() {
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -83,6 +83,7 @@ export function StudentDashboardPage() {
         <SubmissionHeatmap submissionCalendar={Object.entries(stats.submissionCalendar || {}).map(([k, v]) => ({ date: new Date(Number(k) * 1000).toISOString().slice(0, 10), count: Number(v) || 0 }))} />
         <SkillRadarChart skillStats={stats.topicStats || {}} />
       </div>
+            <ChatWidget />
     </div>
   )
 }

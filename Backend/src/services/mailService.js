@@ -1,17 +1,25 @@
 
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let resend
 
-export async function sendOtpEmail(email, otp) {
+function getResendClient() {
   if (!process.env.RESEND_API_KEY) {
     throw new Error('RESEND_API_KEY is not configured')
   }
 
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+
+  return resend
+}
+
+export async function sendOtpEmail(email, otp) {
   const clientUrl =
     process.env.CLIENT_URL || 'https://code-pulse-neon.vercel.app'
 
-  const { data, error } = await resend.emails.send({
+  const { data, error } = await getResendClient().emails.send({
     from: 'CodePulse <onboarding@resend.dev>',
     to: [email],
     subject: 'Your OTP for CodePulse signup',

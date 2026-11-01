@@ -8,6 +8,7 @@ import userRoutes from './routes/userRoutes.js'
 import leetcodeRoutes from './routes/leetcodeRoutes.js'
 import teacherRoutes from './routes/teacherRoutes.js'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
+import chatRoutes from './routes/chatRoutes.js'
 
 const app = express()
 
@@ -15,6 +16,8 @@ const app = express()
 
 const allowedOrigins = [
   'https://code-pulse-neon.vercel.app',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
 ]
 
 app.use(
@@ -54,7 +57,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/leetcode', leetcodeRoutes)
 app.use('/api/teacher', teacherRoutes)
-
+app.use('/api/chat', chatRoutes)
 app.use(notFound)
 app.use(errorHandler)
 
